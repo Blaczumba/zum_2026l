@@ -1,5 +1,4 @@
 import numpy as np
-from typing import Tuple
 
 class MSELoss:
     """Mean Squared Error Loss for Regression."""
@@ -14,10 +13,8 @@ class MSELoss:
 class CrossEntropyLoss:
     """Cross Entropy Loss for Multiclass Classification."""
     def compute_loss(self, y_true_one_hot: np.ndarray, probs: np.ndarray) -> float:
-        # Clip probabilities to prevent log(0)
         probs = np.clip(probs, 1e-15, 1 - 1e-15)
         return -np.mean(np.sum(y_true_one_hot * np.log(probs), axis=1))
 
     def negative_gradient(self, y_true_one_hot: np.ndarray, probs: np.ndarray) -> np.ndarray:
-        # For cross entropy with softmax, the negative gradient w.r.t logits is y - p
         return y_true_one_hot - probs

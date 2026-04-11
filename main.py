@@ -1,6 +1,5 @@
 import yaml
 import time
-import numpy as np
 from sklearn.metrics import accuracy_score, mean_squared_error, r2_score
 from xgboost import XGBClassifier, XGBRegressor
 

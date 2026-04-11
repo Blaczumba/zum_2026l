@@ -11,7 +11,7 @@ def load_stellar(filepath: str, sample_size: int = None) -> Tuple[np.ndarray, np
         # We balance the sample slightly if subsampling
         df = df.groupby('class', group_keys=False).apply(lambda x: x.sample(min(len(x), sample_size // 3)))
         
-    X = df.drop(columns=['class', 'obj_ID']) # obj_ID is just an identifier
+    X = df.drop(columns=['class', 'obj_ID']) # drop identifier and target
     y_raw = df['class']
     
     le = LabelEncoder()
