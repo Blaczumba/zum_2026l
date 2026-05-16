@@ -17,7 +17,7 @@ def load_config(path: str) -> dict:
 
 def run_regression_experiment(config: dict):
     print("\n--- REGRESSION EXPERIMENT (SGEMM GPU Kernel Performance) ---")
-    X_train, X_test, y_train, y_test = load_sgemm("sgemm_product.csv", sample_size=10000)
+    X_train, X_test, y_train, y_test = load_sgemm("data/sgemm_product.csv", sample_size=10000)
     print(f"Data shape: Train: {X_train.shape}, Test: {X_test.shape}")
 
     cfg = config['regression']
@@ -41,7 +41,7 @@ def run_regression_experiment(config: dict):
     # 3. Neural Network
     print("Training Neural Network (PyTorch)...")
     start_time = time.time()
-    preds_nn = train_nn_regressor(X_train, y_train, X_test)
+    model_nn, preds_nn = train_nn_regressor(X_train, y_train, X_test)
     train_time_nn = time.time() - start_time
 
     # Results calculation
@@ -73,7 +73,7 @@ def run_regression_experiment(config: dict):
 
 def run_classification_experiment(config: dict):
     print("\n--- CLASSIFICATION EXPERIMENT (Stellar Classification Dataset) ---")
-    X_train, X_test, y_train, y_test, le = load_stellar("star_classification.csv", sample_size=6000)
+    X_train, X_test, y_train, y_test, le = load_stellar("data/star_classification.csv", sample_size=6000, target_col='MJD')
     print(f"Data shape: Train: {X_train.shape}, Test: {X_test.shape}")
     class_names = list(le.classes_)
 
@@ -98,7 +98,7 @@ def run_classification_experiment(config: dict):
     # 3. Neural Network
     print("Training Neural Network (PyTorch)...")
     start_time = time.time()
-    preds_nn = train_nn_classifier(X_train, y_train, X_test)
+    model_nn, preds_nn = train_nn_classifier(X_train, y_train, X_test)
     train_time_nn = time.time() - start_time
 
     # Results calculation

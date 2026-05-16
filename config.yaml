@@ -2,6 +2,8 @@ regression:
   n_estimators: 20
   learning_rate: 0.1
   max_depth: 10
+  sample_size: 10000
+  repeats: 5
 classification:
   n_estimators: 20
   learning_rate: 0.1

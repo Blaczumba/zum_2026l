@@ -1,0 +1,9 @@
+numpy
+pandas
+scikit-learn
+matplotlib
+pyyaml
+xgboost
+# For PyTorch, follow official instructions at https://pytorch.org/get-started/locally/
+# Installing `torch` via pip may require choosing the correct wheel for your OS/CUDA configuration.
+# You can try: pip install torch torchvision torchaudio

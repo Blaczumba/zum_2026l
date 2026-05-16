@@ -42,7 +42,7 @@ class GradientBoostingClassifier:
 
     def fit(self, X: np.ndarray, y: np.ndarray):
         self.n_classes = len(np.unique(y))
-        
+
         # One-hot encode targets
         y_one_hot = np.zeros((y.size, self.n_classes))
         y_one_hot[np.arange(y.size), y] = 1
@@ -53,7 +53,7 @@ class GradientBoostingClassifier:
         for i in range(self.n_estimators):
             probs = self._softmax(logits)
             pseudo_residuals = self.loss.negative_gradient(y_one_hot, probs)
-            
+
             iteration_trees = []
             for k in range(self.n_classes):
                 tree = DecisionTreeRegressor(max_depth=self.max_depth)
@@ -61,7 +61,7 @@ class GradientBoostingClassifier:
                 update = tree.predict(X)
                 logits[:, k] += self.learning_rate * update
                 iteration_trees.append(tree)
-                
+
             self.trees.append(iteration_trees)
 
     def predict_proba(self, X: np.ndarray) -> np.ndarray:
