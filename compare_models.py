@@ -10,7 +10,7 @@ try:
         with open(path, 'r') as f:
             return yaml.safe_load(f)
 except Exception:
-    print("PyYAML not installed; using default config values and ignoring config.yaml.")
+    print("PyYAML nie jest zainstalowany; używam wartości domyślnych i pomijam config.yaml.")
     def load_config(path: str) -> dict:
         return {
             'regression': {'n_estimators': 20, 'learning_rate': 0.1, 'max_depth': 10},
@@ -54,14 +54,14 @@ def run_regression_experiment(config: dict, data_path: str = 'data/sgemm_product
 
     for rep in range(repeats):
         seed = base_random + rep
-        print(f"\nRepeat {rep+1}/{repeats} (random_state={seed})")
+        print(f"\nPowtórzenie {rep+1}/{repeats} (random_state={seed})")
 
         # Load data with reproducible randomness per repeat
         X_train, X_test, y_train, y_test = load_sgemm(data_path, sample_size=sample_size, random_state=seed)
-        print(f"Data shape: Train: {X_train.shape}, Test: {X_test.shape}")
+        print(f"Kształt danych: Train: {X_train.shape}, Test: {X_test.shape}")
 
         # 1. Custom GBM
-        print("Training Custom Gradient Boosting...")
+        print("Trenowanie niestandardowego Gradient Boostingu...")
         custom_model = GradientBoostingRegressor(**model_cfg)
         start_time = time.time()
         custom_model.fit(X_train, y_train)
@@ -75,7 +75,7 @@ def run_regression_experiment(config: dict, data_path: str = 'data/sgemm_product
         # 2. XGBoost (if available)
         if HAS_XGBOOST:
             try:
-                print("Training XGBoost Regressor...")
+                print("Trenowanie regresora XGBoost...")
                 xgb_model = XGBRegressor(**model_cfg, n_jobs=-1)
                 start_time = time.time()
                 xgb_model.fit(X_train, y_train)
@@ -86,15 +86,15 @@ def run_regression_experiment(config: dict, data_path: str = 'data/sgemm_product
                 accum['XGBoost']['time'].append(train_time_xgb)
                 accum['XGBoost']['last_preds'] = preds_xgb
             except Exception as e:
-                print(f"XGBoost training failed: {e}")
+                print(f"Trening XGBoost nie powiódł się: {e}")
         else:
-            print("XGBoost not installed; skipping XGBoost regression.")
+            print("XGBoost nie jest zainstalowany; pomijam regresję XGBoost.")
 
         # 3. Neural Network (if torch available)
         if HAS_TORCH:
             try:
                 from neural_network import train_nn_regressor
-                print("Training Neural Network (PyTorch)...")
+                print("Trenowanie sieci neuronowej (PyTorch)...")
                 start_time = time.time()
                 model_nn, preds_nn = train_nn_regressor(X_train, y_train, X_test)
                 train_time_nn = time.time() - start_time
@@ -103,15 +103,15 @@ def run_regression_experiment(config: dict, data_path: str = 'data/sgemm_product
                 accum['PyTorch NN']['time'].append(train_time_nn)
                 accum['PyTorch NN']['last_preds'] = preds_nn
             except Exception as e:
-                print(f"Neural network training failed: {e}")
+                print(f"Trening sieci neuronowej nie powiódł się: {e}")
         else:
-            print("PyTorch not installed; skipping neural network regression.")
+            print("PyTorch nie jest zainstalowany; pomijam regresję sieci neuronowej.")
 
         last_y_test = y_test
 
     # Summarize results across repeats
     print("\n--- REGRESSION RESULTS (averaged over repeats) ---")
-    print(f"{'Model':<20} | {'MSE mean ± std':<30} | {'R2 mean ± std':<30} | {'Train Time mean ± std (s)':<30}")
+    print(f"{'Model':<20} | {'Średnie MSE ± odch.std':<30} | {'Średnie R2 ± odch.std':<30} | {'Średni czas treningu ± odch.std (s)':<30}")
     print("-" * 120)
 
     results = {}
@@ -138,7 +138,7 @@ def run_regression_experiment(config: dict, data_path: str = 'data/sgemm_product
     time_dict = {name: results[name]['time_mean'] for name in results}
 
     if preds_dict and last_y_test is not None:
-        print("\nGenerating regression plots (from last repeat)...")
+        print("\nGenerowanie wykresów regresji (z ostatniego powtórzenia)...")
         plot_regression_scatter(last_y_test, preds_dict)
         plot_bar_comparison(mse_dict, "Porównanie Błędu Średniokwadratowego (MSE)", "MSE", "regression_mse_bar.png")
         plot_bar_comparison(time_dict, "Porównanie Czasu Treningu (Regresja)", "Sekundy", "regression_time_bar.png")
@@ -147,20 +147,20 @@ def run_regression_experiment(config: dict, data_path: str = 'data/sgemm_product
 
 
 def run_classification_experiment(config: dict, data_path: str = 'data/star_classification.csv'):
-    print("\n--- CLASSIFICATION EXPERIMENT (Stellar Classification Dataset) ---")
+    print("\n--- EKSPERYMENT KLASYFIKACYJNY (Zbiór danych Stellar Classification) ---")
     try:
         X_train, X_test, y_train, y_test, le = load_stellar(data_path, sample_size=6000, target_col='MJD')
     except FileNotFoundError:
         raise
 
-    print(f"Data shape: Train: {X_train.shape}, Test: {X_test.shape}")
+    print(f"Kształt danych: Train: {X_train.shape}, Test: {X_test.shape}")
     class_names = list(le.classes_)
 
     cfg = config.get('classification', {})
     results = {}
 
     # 1. Custom GBM
-    print("Training Custom Gradient Boosting Classifier...")
+    print("Trenowanie niestandardowego klasyfikatora Gradient Boosting...")
     custom_model = GradientBoostingClassifier(**cfg)
     start_time = time.time()
     custom_model.fit(X_train, y_train)
@@ -172,7 +172,7 @@ def run_classification_experiment(config: dict, data_path: str = 'data/star_clas
     # 2. XGBoost
     if HAS_XGBOOST:
         try:
-            print("Training XGBoost Classifier...")
+            print("Trenowanie klasyfikatora XGBoost...")
             xgb_model = XGBClassifier(**cfg, use_label_encoder=False, eval_metric='mlogloss', n_jobs=-1)
             start_time = time.time()
             xgb_model.fit(X_train, y_train)
@@ -181,28 +181,28 @@ def run_classification_experiment(config: dict, data_path: str = 'data/star_clas
             results['XGBoost'] = {'preds': preds_xgb, 'time': train_time_xgb,
                                   'acc': accuracy_score(y_test, preds_xgb)}
         except Exception as e:
-            print(f"XGBoost training failed: {e}")
+            print(f"Trening XGBoost nie powiódł się: {e}")
     else:
-        print("XGBoost not installed; skipping XGBoost classification.")
+        print("XGBoost nie jest zainstalowany; pomijam klasyfikację XGBoost.")
 
     # 3. Neural Network
     if HAS_TORCH:
         try:
             from neural_network import train_nn_classifier
-            print("Training Neural Network (PyTorch)...")
+            print("Trenowanie sieci neuronowej (PyTorch)...")
             start_time = time.time()
             model_nn_clf, preds_nn = train_nn_classifier(X_train, y_train, X_test)
             train_time_nn = time.time() - start_time
             results['PyTorch NN'] = {'preds': preds_nn, 'time': train_time_nn,
                                         'acc': accuracy_score(y_test, preds_nn)}
         except Exception as e:
-                print(f"Neural network training failed: {e}")
+                print(f"Trening sieci neuronowej nie powiódł się: {e}")
     else:
-        print("PyTorch not installed; skipping neural network classification.")
+        print("PyTorch nie jest zainstalowany; pomijam klasyfikację siecią neuronową.")
 
     # Print results
-    print("\n--- CLASSIFICATION RESULTS ---")
-    print(f"{'Model':<20} | {'Accuracy':<15} | {'Train Time (s)':<15}")
+    print("\n--- WYNIKI KLASYFIKACJI ---")
+    print(f"{'Model':<20} | {'Dokładność':<15} | {'Czas treningu (s)':<15}")
     print("-" * 55)
     for name in ['Custom GBM', 'XGBoost', 'PyTorch NN']:
         if name in results:
@@ -217,7 +217,7 @@ def run_classification_experiment(config: dict, data_path: str = 'data/star_clas
     time_dict = {name: v['time'] for name, v in results.items()}
 
     if preds_dict:
-        print("\nGenerating classification plots...")
+        print("\nGenerowanie wykresów klasyfikacji...")
         plot_confusion_matrices(y_test, preds_dict, class_names)
         plot_bar_comparison(acc_dict, "Porównanie Dokładności (Accuracy)", "Accuracy", "classification_acc_bar.png")
         plot_bar_comparison(time_dict, "Porównanie Czasu Treningu (Klasyfikacja)", "Sekundy", "classification_time_bar.png")
@@ -232,10 +232,10 @@ if __name__ == '__main__':
     try:
         run_regression_experiment(conf)
     except FileNotFoundError:
-        print("\nERROR: Please put 'sgemm_product.csv' in the 'data/' directory.")
+        print("\nBŁĄD: Proszę umieścić 'sgemm_product.csv' w katalogu data/.")
 
     # Run classification if dataset exists
     try:
         run_classification_experiment(conf)
     except FileNotFoundError:
-        print("\nERROR: Please put 'star_classification.csv' in the 'data/' directory.")
+        print("\nBŁĄD: Proszę umieścić 'star_classification.csv' w katalogu data/.")

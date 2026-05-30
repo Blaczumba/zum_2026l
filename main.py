@@ -18,12 +18,12 @@ def load_config(path: str) -> dict:
 def run_regression_experiment(config: dict):
     print("\n--- REGRESSION EXPERIMENT (SGEMM GPU Kernel Performance) ---")
     X_train, X_test, y_train, y_test = load_sgemm("data/sgemm_product.csv", sample_size=10000)
-    print(f"Data shape: Train: {X_train.shape}, Test: {X_test.shape}")
+    print(f"Kształt danych: Train: {X_train.shape}, Test: {X_test.shape}")
 
     cfg = config['regression']
     
     # 1. Custom GBM
-    print("Training Custom Gradient Boosting...")
+    print("Trenowanie niestandardowego Gradient Boostingu...")
     custom_model = GradientBoostingRegressor(**cfg)
     start_time = time.time()
     custom_model.fit(X_train, y_train)
@@ -31,7 +31,7 @@ def run_regression_experiment(config: dict):
     preds_custom = custom_model.predict(X_test)
     
     # 2. XGBoost
-    print("Training XGBoost Regressor...")
+    print("Trenowanie regresora XGBoost...")
     xgb_model = XGBRegressor(**cfg, n_jobs=-1)
     start_time = time.time()
     xgb_model.fit(X_train, y_train)
@@ -39,7 +39,7 @@ def run_regression_experiment(config: dict):
     preds_xgb = xgb_model.predict(X_test)
 
     # 3. Neural Network
-    print("Training Neural Network (PyTorch)...")
+    print("Trenowanie sieci neuronowej (PyTorch)...")
     start_time = time.time()
     model_nn, preds_nn = train_nn_regressor(X_train, y_train, X_test)
     train_time_nn = time.time() - start_time
@@ -50,7 +50,7 @@ def run_regression_experiment(config: dict):
     mse_nn = mean_squared_error(y_test, preds_nn)
 
     print("\n--- REGRESSION RESULTS ---")
-    print(f"{'Model':<20} | {'MSE':<15} | {'R2 Score':<15} | {'Train Time (s)':<15}")
+    print(f"{'Model':<20} | {'MSE':<15} | {'R2':<15} | {'Czas treningu (s)':<15}")
     print("-" * 75)
     print(f"{'Custom GBM':<20} | {mse_custom:<15.4f} | {r2_score(y_test, preds_custom):<15.4f} | {train_time_custom:<15.4f}")
     print(f"{'XGBoost':<20} | {mse_xgb:<15.4f} | {r2_score(y_test, preds_xgb):<15.4f} | {train_time_xgb:<15.4f}")
@@ -72,15 +72,15 @@ def run_regression_experiment(config: dict):
 
 
 def run_classification_experiment(config: dict):
-    print("\n--- CLASSIFICATION EXPERIMENT (Stellar Classification Dataset) ---")
+    print("\n--- EKSPERYMENT KLASYFIKACYJNY (Zbiór danych Stellar Classification) ---")
     X_train, X_test, y_train, y_test, le = load_stellar("data/star_classification.csv", sample_size=6000, target_col='MJD')
-    print(f"Data shape: Train: {X_train.shape}, Test: {X_test.shape}")
+    print(f"Kształt danych: Train: {X_train.shape}, Test: {X_test.shape}")
     class_names = list(le.classes_)
 
     cfg = config['classification']
     
     # 1. Custom GBM
-    print("Training Custom Gradient Boosting Classifier...")
+    print("Trenowanie niestandardowego klasyfikatora Gradient Boosting...")
     custom_model = GradientBoostingClassifier(**cfg)
     start_time = time.time()
     custom_model.fit(X_train, y_train)
@@ -88,7 +88,7 @@ def run_classification_experiment(config: dict):
     preds_custom = custom_model.predict(X_test)
 
     # 2. XGBoost
-    print("Training XGBoost Classifier...")
+    print("Trenowanie klasyfikatora XGBoost...")
     xgb_model = XGBClassifier(**cfg, use_label_encoder=False, eval_metric='mlogloss', n_jobs=-1)
     start_time = time.time()
     xgb_model.fit(X_train, y_train)
@@ -96,7 +96,7 @@ def run_classification_experiment(config: dict):
     preds_xgb = xgb_model.predict(X_test)
 
     # 3. Neural Network
-    print("Training Neural Network (PyTorch)...")
+    print("Trenowanie sieci neuronowej (PyTorch)...")
     start_time = time.time()
     model_nn, preds_nn = train_nn_classifier(X_train, y_train, X_test)
     train_time_nn = time.time() - start_time
@@ -106,8 +106,8 @@ def run_classification_experiment(config: dict):
     acc_xgb = accuracy_score(y_test, preds_xgb)
     acc_nn = accuracy_score(y_test, preds_nn)
 
-    print("\n--- CLASSIFICATION RESULTS ---")
-    print(f"{'Model':<20} | {'Accuracy':<15} | {'Train Time (s)':<15}")
+    print("\n--- WYNIKI KLASYFIKACJI ---")
+    print(f"{'Model':<20} | {'Dokładność':<15} | {'Czas treningu (s)':<15}")
     print("-" * 55)
     print(f"{'Custom GBM':<20} | {acc_custom:<15.4f} | {train_time_custom:<15.4f}")
     print(f"{'XGBoost':<20} | {acc_xgb:<15.4f} | {train_time_xgb:<15.4f}")
@@ -134,9 +134,9 @@ if __name__ == "__main__":
     try:
         run_regression_experiment(conf)
     except FileNotFoundError:
-        print("\nERROR: Please download 'sgemm_product.csv' and place it in the project root.")
+        print("\nBŁĄD: Proszę pobrać 'sgemm_product.csv' i umieścić go w katalogu projektu.")
         
     try:
         run_classification_experiment(conf)
     except FileNotFoundError:
-        print("\nERROR: Please download 'star_classification.csv' and place it in the project root.")
+        print("\nBŁĄD: Proszę pobrać 'star_classification.csv' i umieścić go w katalogu projektu.")
