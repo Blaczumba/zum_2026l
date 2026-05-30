@@ -84,7 +84,7 @@ def train_nn_regressor(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndar
     model = MLPRegressor(X_train.shape[1])
     criterion = nn.MSELoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=False)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
 
     X_tr_t = torch.FloatTensor(X_train)
     y_tr_t = torch.FloatTensor(y_train_scaled).unsqueeze(1)
@@ -147,7 +147,7 @@ def train_nn_classifier(X_train: np.ndarray, y_train: np.ndarray, X_test: np.nda
     model = MLPClassifier(X_train.shape[1], num_classes)
     criterion = nn.CrossEntropyLoss()
     optimizer = optim.Adam(model.parameters(), lr=0.001, weight_decay=1e-5)
-    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5, verbose=False)
+    scheduler = optim.lr_scheduler.ReduceLROnPlateau(optimizer, mode='min', factor=0.5, patience=5)
 
     X_tr_t = torch.FloatTensor(X_train)
     y_tr_t = torch.LongTensor(y_train)
